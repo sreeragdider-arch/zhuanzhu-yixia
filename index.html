@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17352b"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="专注一下">
+<title>专注一下</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f0e7;color:#17352b;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:620px;margin:auto;padding:28px 18px 60px}h1{font-size:34px;margin:12px 0 4px}.sub{color:#6a756e;margin:0 0 25px}
+.card{background:#fff;border:1px solid #d9ded8;border-radius:24px;padding:22px;margin:16px 0;box-shadow:0 8px 30px #17352b0d}
+.timer{text-align:center}.time{font-size:68px;font-weight:750;letter-spacing:-3px;margin:18px 0}.status{color:#6a756e}
+button{border:0;border-radius:14px;padding:13px 18px;font-size:16px;font-weight:650;cursor:pointer}.primary{background:#17352b;color:white}.secondary{background:#e8eee9;color:#17352b;margin-left:8px}
+.row{display:flex;gap:9px}input{min-width:0;flex:1;border:1px solid #ccd4ce;border-radius:14px;padding:13px;font-size:16px}
+ul{list-style:none;padding:0;margin:14px 0 0}li{display:flex;align-items:center;gap:11px;padding:13px 3px;border-bottom:1px solid #edf0ed}
+li input{flex:0;width:20px;height:20px}.done span{text-decoration:line-through;color:#98a19b}.del{margin-left:auto;background:none;color:#a24c3f;padding:6px}
+.note{font-size:13px;color:#78827b;text-align:center;margin-top:20px}
+</style></head>
+<body><main>
+<h1>专注一下</h1><p class="sub">把今天最重要的事，认真完成一点点。</p>
+<section class="card timer"><div class="status" id="status">准备开始</div><div class="time" id="time">25:00</div>
+<button class="primary" id="start">开始专注</button><button class="secondary" id="reset">重置</button></section>
+<section class="card"><h2>今日任务</h2><div class="row"><input id="task" placeholder="例如：复习高数第三章"><button class="primary" id="add">添加</button></div><ul id="list"></ul></section>
+<p class="note">任务只保存在你的手机中。iPhone 可用 Safari“分享 → 添加到主屏幕”。</p>
+</main><script>
+let left=1500,timer=null,tasks=JSON.parse(localStorage.getItem("focusTasks")||"[]");
+const time=document.querySelector("#time"),status=document.querySelector("#status"),start=document.querySelector("#start"),list=document.querySelector("#list"),task=document.querySelector("#task");
+function drawTime(){time.textContent=String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0")}
+function save(){localStorage.setItem("focusTasks",JSON.stringify(tasks))}
+function draw(){list.innerHTML="";tasks.forEach((t,i)=>{const li=document.createElement("li");li.className=t.done?"done":"";li.innerHTML='<input type="checkbox" '+(t.done?"checked":"")+'><span></span><button class="del">删除</button>';li.querySelector("span").textContent=t.text;li.querySelector("input").onchange=()=>{tasks[i].done=!tasks[i].done;save();draw()};li.querySelector(".del").onclick=()=>{tasks.splice(i,1);save();draw()};list.appendChild(li)})}
+start.onclick=()=>{if(timer){clearInterval(timer);timer=null;start.textContent="继续";status.textContent="已暂停";return}start.textContent="暂停";status.textContent="正在专注";timer=setInterval(()=>{if(left>0){left--;drawTime()}else{clearInterval(timer);timer=null;status.textContent="完成一次专注！";start.textContent="再来一次";alert("做得不错，休息一下吧！")}},1000)}
+document.querySelector("#reset").onclick=()=>{clearInterval(timer);timer=null;left=1500;drawTime();start.textContent="开始专注";status.textContent="准备开始"}
+function add(){const v=task.value.trim();if(!v)return;tasks.unshift({text:v,done:false});task.value="";save();draw()}
+document.querySelector("#add").onclick=add;task.onkeydown=e=>{if(e.key==="Enter")add()};draw();drawTime();
+</script></body></html>
