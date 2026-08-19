@@ -1,35 +1,65 @@
-<!doctype html>
-<html lang="zh-CN">
-<head>
+<!doctype html><html lang="zh-CN"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#17352b"><meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="专注一下">
+<meta name="theme-color" content="#143b32"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="专注一下">
 <title>专注一下</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f4f0e7;color:#17352b;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
-main{max-width:620px;margin:auto;padding:28px 18px 60px}h1{font-size:34px;margin:12px 0 4px}.sub{color:#6a756e;margin:0 0 25px}
-.card{background:#fff;border:1px solid #d9ded8;border-radius:24px;padding:22px;margin:16px 0;box-shadow:0 8px 30px #17352b0d}
-.timer{text-align:center}.time{font-size:68px;font-weight:750;letter-spacing:-3px;margin:18px 0}.status{color:#6a756e}
-button{border:0;border-radius:14px;padding:13px 18px;font-size:16px;font-weight:650;cursor:pointer}.primary{background:#17352b;color:white}.secondary{background:#e8eee9;color:#17352b;margin-left:8px}
-.row{display:flex;gap:9px}input{min-width:0;flex:1;border:1px solid #ccd4ce;border-radius:14px;padding:13px;font-size:16px}
-ul{list-style:none;padding:0;margin:14px 0 0}li{display:flex;align-items:center;gap:11px;padding:13px 3px;border-bottom:1px solid #edf0ed}
-li input{flex:0;width:20px;height:20px}.done span{text-decoration:line-through;color:#98a19b}.del{margin-left:auto;background:none;color:#a24c3f;padding:6px}
-.note{font-size:13px;color:#78827b;text-align:center;margin-top:20px}
-</style></head>
-<body><main>
-<h1>专注一下</h1><p class="sub">把今天最重要的事，认真完成一点点。</p>
-<section class="card timer"><div class="status" id="status">准备开始</div><div class="time" id="time">25:00</div>
-<button class="primary" id="start">开始专注</button><button class="secondary" id="reset">重置</button></section>
-<section class="card"><h2>今日任务</h2><div class="row"><input id="task" placeholder="例如：复习高数第三章"><button class="primary" id="add">添加</button></div><ul id="list"></ul></section>
-<p class="note">任务只保存在你的手机中。iPhone 可用 Safari“分享 → 添加到主屏幕”。</p>
-</main><script>
-let left=1500,timer=null,tasks=JSON.parse(localStorage.getItem("focusTasks")||"[]");
-const time=document.querySelector("#time"),status=document.querySelector("#status"),start=document.querySelector("#start"),list=document.querySelector("#list"),task=document.querySelector("#task");
-function drawTime(){time.textContent=String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0")}
-function save(){localStorage.setItem("focusTasks",JSON.stringify(tasks))}
-function draw(){list.innerHTML="";tasks.forEach((t,i)=>{const li=document.createElement("li");li.className=t.done?"done":"";li.innerHTML='<input type="checkbox" '+(t.done?"checked":"")+'><span></span><button class="del">删除</button>';li.querySelector("span").textContent=t.text;li.querySelector("input").onchange=()=>{tasks[i].done=!tasks[i].done;save();draw()};li.querySelector(".del").onclick=()=>{tasks.splice(i,1);save();draw()};list.appendChild(li)})}
-start.onclick=()=>{if(timer){clearInterval(timer);timer=null;start.textContent="继续";status.textContent="已暂停";return}start.textContent="暂停";status.textContent="正在专注";timer=setInterval(()=>{if(left>0){left--;drawTime()}else{clearInterval(timer);timer=null;status.textContent="完成一次专注！";start.textContent="再来一次";alert("做得不错，休息一下吧！")}},1000)}
-document.querySelector("#reset").onclick=()=>{clearInterval(timer);timer=null;left=1500;drawTime();start.textContent="开始专注";status.textContent="准备开始"}
-function add(){const v=task.value.trim();if(!v)return;tasks.unshift({text:v,done:false});task.value="";save();draw()}
-document.querySelector("#add").onclick=add;task.onkeydown=e=>{if(e.key==="Enter")add()};draw();drawTime();
+:root{--bg:#eef3ed;--paper:#fbfcf8;--ink:#15382f;--muted:#6d7d75;--line:#d9e2dc;--accent:#e9683f;--accent2:#ffb95c;--green:#1d5a49;--shadow:0 18px 50px rgba(18,55,45,.10);--r:24px}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;min-height:100dvh;color:var(--ink);background:radial-gradient(circle at 100% 0,#f9d8b7 0,transparent 26rem),linear-gradient(145deg,#f4f6ee,var(--bg));font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;transition:.25s}
+body.dark{--bg:#10241f;--paper:#18332b;--ink:#f3f4ea;--muted:#a5b3ad;--line:#315047;--green:#f1f4ea;--shadow:0 18px 60px rgba(0,0,0,.25);background:radial-gradient(circle at 100% 0,#633824 0,transparent 27rem),#10241f}
+button,input,select{font:inherit}button{cursor:pointer}.app{max-width:980px;margin:auto;padding:22px 18px calc(45px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}.brand h1{font-size:28px;letter-spacing:-1px;margin:0}.brand p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.iconbtn{border:1px solid var(--line);background:color-mix(in srgb,var(--paper) 82%,transparent);color:var(--ink);width:44px;height:44px;border-radius:15px;font-size:19px}
+.hero{position:relative;overflow:hidden;background:var(--green);color:#f8f7ee;border-radius:32px;padding:25px;box-shadow:var(--shadow)}.hero:after{content:"";position:absolute;width:210px;height:210px;border-radius:50%;right:-80px;top:-90px;background:var(--accent2);opacity:.85}
+.herohead{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-start}.eyebrow{font-size:13px;opacity:.72;margin:0 0 6px}.hero h2{font-size:22px;margin:0}.streak{background:rgba(255,255,255,.14);padding:8px 11px;border-radius:13px;font-size:13px}
+.modebar{position:relative;z-index:1;display:flex;gap:7px;margin:20px auto 7px;background:rgba(255,255,255,.10);padding:5px;border-radius:16px;max-width:370px}.mode{flex:1;border:0;padding:10px 7px;border-radius:12px;background:transparent;color:#fff;opacity:.68}.mode.on{background:#fff;color:#173b32;opacity:1}
+.timer{text-align:center;position:relative;z-index:1}.time{font-size:76px;line-height:1;font-weight:800;letter-spacing:-5px;margin:18px 0 8px;font-variant-numeric:tabular-nums}.timerstatus{font-size:14px;opacity:.72;margin-bottom:20px}
+.actions{display:flex;justify-content:center;gap:10px}.primary,.soft{border:0;border-radius:15px;padding:13px 19px;font-weight:700}.primary{background:var(--accent);color:#fff}.hero .primary{background:#fff;color:#173b32}.hero .soft{background:rgba(255,255,255,.12);color:#fff}
+.grid{display:grid;grid-template-columns:1.45fr .75fr;gap:17px;margin-top:17px}.card{background:color-mix(in srgb,var(--paper) 94%,transparent);border:1px solid var(--line);border-radius:var(--r);padding:21px;box-shadow:0 8px 26px rgba(18,55,45,.05)}
+.cardtitle{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.card h3{margin:0;font-size:19px}.count{font-size:13px;color:var(--muted)}
+.addrow{display:grid;grid-template-columns:1fr 106px 48px;gap:8px}.addrow input,.addrow select{min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:13px;padding:12px}.addrow button{border:0;background:var(--green);color:var(--paper);border-radius:13px;font-size:23px}
+.tasks{display:grid;gap:9px;margin-top:14px}.task{display:grid;grid-template-columns:24px 1fr auto;gap:11px;align-items:center;padding:12px;background:var(--bg);border-radius:15px}.task input{width:20px;height:20px;accent-color:var(--accent)}.task.done .tasktext{text-decoration:line-through;opacity:.45}.tasktext{font-weight:600}.tag{font-size:11px;color:var(--muted);margin-top:3px}.delete{border:0;background:transparent;color:var(--muted);padding:6px}.empty{text-align:center;color:var(--muted);padding:24px 5px}
+.goalrow{display:flex;justify-content:space-between;align-items:end}.big{font-size:39px;font-weight:800;letter-spacing:-2px}.small{font-size:13px;color:var(--muted)}.progress{height:9px;background:var(--line);border-radius:9px;margin:13px 0 20px;overflow:hidden}.fill{height:100%;width:0;background:var(--accent);border-radius:9px;transition:.4s}
+.stepper{display:flex;gap:7px}.stepper button{flex:1;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:9px}.stepper button.on{background:var(--green);color:var(--paper)}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;align-items:end;height:115px;margin-top:16px}.day{text-align:center;color:var(--muted);font-size:11px}.bar{height:var(--h);min-height:5px;background:var(--accent2);border-radius:8px 8px 3px 3px;margin-bottom:7px;opacity:.9}.today .bar{background:var(--accent)}
+.quote{margin-top:17px;background:#f7d8bb;color:#543323;border:0}.dark .quote{background:#513727;color:#fff0e2}.quote p{font-family:Georgia,"Songti SC",serif;font-size:20px;line-height:1.55;margin:0}.quote span{display:block;font-size:12px;opacity:.65;margin-top:10px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,30px);background:#102a23;color:white;padding:12px 17px;border-radius:14px;opacity:0;pointer-events:none;transition:.3s;z-index:8}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.time{font-size:70px}.hero{padding:22px 18px}.addrow{grid-template-columns:1fr 92px 46px}.side{display:grid;grid-template-columns:1fr 1fr;gap:13px}.side .card{margin:0}.side .quote{grid-column:1/-1;margin:0}}
+@media(max-width:430px){.side{grid-template-columns:1fr}.side .quote{grid-column:auto}.time{font-size:64px}.brand p{max-width:230px}.herohead{gap:10px}.streak{white-space:nowrap}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style></head><body><div class="app">
+<header><div class="brand"><h1>专注一下</h1><p id="greeting">今天也向目标靠近一点</p></div><button class="iconbtn" id="theme" aria-label="切换深色模式">☾</button></header>
+<section class="hero"><div class="herohead"><div><p class="eyebrow" id="date"></p><h2>此刻，只做一件事</h2></div><div class="streak">连续 <b id="streak">0</b> 天</div></div>
+<div class="modebar"><button class="mode on" data-min="25" data-name="专注">专注 25</button><button class="mode" data-min="50" data-name="深度">深度 50</button><button class="mode" data-min="5" data-name="短休息">休息 5</button></div>
+<div class="timer"><div class="time" id="time">25:00</div><div class="timerstatus" id="status">准备好后，就开始吧</div><div class="actions"><button class="primary" id="start">开始专注</button><button class="soft" id="reset">重置</button></div></div></section>
+<div class="grid"><section class="card"><div class="cardtitle"><h3>今日任务</h3><span class="count" id="count">0 项待完成</span></div>
+<div class="addrow"><input id="taskInput" aria-label="任务内容" placeholder="写下下一件要完成的事"><select id="subject" aria-label="任务分类"><option>课程</option><option>考试</option><option>论文</option><option>阅读</option><option>其他</option></select><button id="add" aria-label="添加任务">＋</button></div><div class="tasks" id="tasks"></div></section>
+<div class="side"><section class="card"><div class="cardtitle"><h3>今日目标</h3><span class="small">专注次数</span></div><div class="goalrow"><div><span class="big" id="sessions">0</span><span class="small"> / <b id="goal">4</b> 次</span></div><span class="small" id="minutes">0 分钟</span></div><div class="progress"><div class="fill" id="fill"></div></div><div class="stepper"><button data-goal="2">2 次</button><button class="on" data-goal="4">4 次</button><button data-goal="6">6 次</button></div></section>
+<section class="card"><div class="cardtitle"><h3>本周节奏</h3><span class="small">专注记录</span></div><div class="week" id="week"></div></section>
+<section class="card quote"><p>“先完成，再完美。今天的二十五分钟，也算数。”</p><span>给正在努力的你</span></section></div></div>
+</div><div class="toast" id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),key="focusAppV2",old=JSON.parse(localStorage.getItem("focusTasks")||"[]");
+let state=JSON.parse(localStorage.getItem(key)||"null")||{tasks:old.map(t=>({...t,subject:"课程"})),goal:4,days:{},last:"",streak:0,dark:false};
+let total=1500,left=total,timer=null,modeName="专注";
+function save(){localStorage.setItem(key,JSON.stringify(state))}
+function dayKey(d=new Date()){return d.toISOString().slice(0,10)}
+function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function toast(s){$("#toast").textContent=s;$("#toast").classList.add("show");setTimeout(()=>$("#toast").classList.remove("show"),2200)}
+function renderTime(){let m=Math.floor(left/60),s=left%60;$("#time").textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");document.title=$("#time").textContent+" · 专注一下"}
+function renderTasks(){let open=state.tasks.filter(t=>!t.done).length;$("#count").textContent=open+" 项待完成";$("#tasks").innerHTML=state.tasks.length?state.tasks.map((t,i)=>'<div class="task '+(t.done?"done":"")+'"><input type="checkbox" '+(t.done?"checked":"")+' data-check="'+i+'" aria-label="完成任务"><div><div class="tasktext">'+esc(t.text)+'</div><div class="tag">'+esc(t.subject||"课程")+'</div></div><button class="delete" data-del="'+i+'" aria-label="删除任务">删除</button></div>').join(""):'<div class="empty">还没有任务，先写下今天最重要的一件事。</div>';
+document.querySelectorAll("[data-check]").forEach(x=>x.onchange=()=>{state.tasks[x.dataset.check].done=x.checked;save();renderTasks()});document.querySelectorAll("[data-del]").forEach(x=>x.onclick=()=>{state.tasks.splice(x.dataset.del,1);save();renderTasks()})}
+function todayData(){return state.days[dayKey()]||{sessions:0,minutes:0}}
+function renderStats(){let d=todayData();$("#sessions").textContent=d.sessions;$("#minutes").textContent=d.minutes+" 分钟";$("#goal").textContent=state.goal;$("#fill").style.width=Math.min(100,d.sessions/state.goal*100)+"%";$("#streak").textContent=state.streak||0;document.querySelectorAll("[data-goal]").forEach(b=>b.classList.toggle("on",+b.dataset.goal===state.goal));
+let names=["日","一","二","三","四","五","六"],now=new Date(),items=[];for(let i=6;i>=0;i--){let dt=new Date(now);dt.setDate(now.getDate()-i);let n=(state.days[dayKey(dt)]||{}).sessions||0;items.push('<div class="day '+(i===0?"today":"")+'"><div class="bar" style="--h:'+Math.max(6,Math.min(82,n*18))+'px"></div>周'+names[dt.getDay()]+'</div>')}$("#week").innerHTML=items.join("")}
+function complete(){let k=dayKey(),d=todayData();state.days[k]={sessions:d.sessions+1,minutes:d.minutes+Math.round(total/60)};if(state.last!==k){let y=new Date();y.setDate(y.getDate()-1);state.streak=state.last===dayKey(y)?(state.streak||0)+1:1;state.last=k}save();renderStats();toast("完成一次专注，做得很好");navigator.vibrate&&navigator.vibrate([120,60,120])}
+$("#start").onclick=()=>{if(timer){clearInterval(timer);timer=null;$("#start").textContent="继续";$("#status").textContent="暂停一下也没关系";return}$("#start").textContent="暂停";$("#status").textContent="正在"+modeName+"，保持这个节奏";timer=setInterval(()=>{if(left>0){left--;renderTime()}else{clearInterval(timer);timer=null;if(modeName!=="短休息")complete();$("#status").textContent=modeName==="短休息"?"休息结束，继续出发":"这一轮完成了";$("#start").textContent="再来一次";left=total;renderTime()}},1000)}
+$("#reset").onclick=()=>{clearInterval(timer);timer=null;left=total;renderTime();$("#start").textContent="开始专注";$("#status").textContent="准备好后，就开始吧"}
+document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>{clearInterval(timer);timer=null;document.querySelectorAll(".mode").forEach(x=>x.classList.remove("on"));b.classList.add("on");total=+b.dataset.min*60;left=total;modeName=b.dataset.name;$("#start").textContent=modeName==="短休息"?"开始休息":"开始专注";$("#status").textContent="已切换到"+modeName+"模式";renderTime()})
+function add(){let v=$("#taskInput").value.trim();if(!v)return;state.tasks.unshift({text:v,subject:$("#subject").value,done:false});$("#taskInput").value="";save();renderTasks();toast("任务已加入今天")}
+$("#add").onclick=add;$("#taskInput").onkeydown=e=>{if(e.key==="Enter")add()}
+document.querySelectorAll("[data-goal]").forEach(b=>b.onclick=()=>{state.goal=+b.dataset.goal;save();renderStats()})
+$("#theme").onclick=()=>{state.dark=!state.dark;save();applyTheme()}
+function applyTheme(){document.body.classList.toggle("dark",state.dark);$("#theme").textContent=state.dark?"☀":"☾";document.querySelector('meta[name="theme-color"]').content=state.dark?"#10241f":"#143b32"}
+let now=new Date(),h=now.getHours();$("#greeting").textContent=(h<11?"早上好":h<14?"中午好":h<18?"下午好":"晚上好")+"，今天也向目标靠近一点";$("#date").textContent=now.toLocaleDateString("zh-CN",{month:"long",day:"numeric",weekday:"long"});
+applyTheme();renderTime();renderTasks();renderStats();
 </script></body></html>
